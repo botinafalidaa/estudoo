@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulado | Modelagem de Negócios</title>
+<style>
+:root{
+  --bg:#070b16;--card:rgba(20,28,48,.72);--line:rgba(140,165,230,.16);--line2:rgba(140,165,230,.3);
+  --text:#eef2fb;--soft:#a9b6d3;--mute:#7383a6;
+  --accent:#7c9cff;--accent2:#b18cff;--good:#34d399;--bad:#fb7185;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;background:
+  radial-gradient(40% 35% at 15% 10%,rgba(124,156,255,.22),transparent 70%),
+  radial-gradient(35% 30% at 90% 20%,rgba(177,140,255,.18),transparent 70%),
+  radial-gradient(45% 40% at 60% 100%,rgba(52,211,153,.08),transparent 70%);
+  animation:drift 22s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-3%,2%) scale(1.05)}}
+main{max-width:780px;margin:0 auto;padding:clamp(24px,6vw,64px) 20px 48px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);padding:6px 12px;border:1px solid var(--line2);border-radius:999px;background:rgba(124,156,255,.08)}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.1;letter-spacing:-.02em;margin:18px 0 10px;
+  background:linear-gradient(120deg,#fff 30%,#c3d0ff 70%,#d8c4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.panel{position:relative;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4.5vw,36px);margin-top:28px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 30px 80px -30px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.05)}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:clamp(20px,3.6vw,25px);line-height:1.4;letter-spacing:-.01em;margin:10px 0 22px;font-weight:650}
+p{color:var(--soft);margin:0 0 12px}
+.muted{color:var(--mute);font-size:13px}
+/* home */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 26px}
+.feat{padding:16px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.feat b{display:block;font-size:24px;letter-spacing:-.02em}
+.feat span{font-size:13px;color:var(--mute)}
+.toggle{display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--soft);font-size:14px;margin-bottom:20px;user-select:none}
+.toggle input{appearance:none;width:42px;height:24px;border-radius:999px;background:#26314b;position:relative;cursor:pointer;transition:.2s;margin:0;flex:none}
+.toggle input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.toggle input:checked{background:var(--accent)}
+.toggle input:checked::after{left:21px}
+/* buttons */
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:14px;font-weight:650;font-size:15px;
+  border:1px solid var(--line2);background:rgba(255,255,255,.04);transition:.18s}
+.btn:hover{background:rgba(255,255,255,.08);border-color:rgba(160,185,255,.5)}
+.btn.primary{border:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0b1020;box-shadow:0 10px 30px -10px rgba(124,156,255,.7)}
+.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+button:focus-visible{outline:3px solid #a8bfff;outline-offset:2px}
+/* quiz */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--soft)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-weight:650;font-size:13px}
+.pill.g{background:rgba(52,211,153,.12);color:var(--good)}
+.pill.b{background:rgba(251,113,133,.12);color:var(--bad)}
+.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin:16px 0 22px}
+.bar>div{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.qnum{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.option{display:flex;align-items:flex-start;gap:14px;width:100%;margin:10px 0;padding:15px 16px;border-radius:16px;text-align:left;line-height:1.5;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);transition:.18s;position:relative}
+.option:hover:not(:disabled){border-color:rgba(160,185,255,.55);background:rgba(124,156,255,.08);transform:translateX(3px)}
+.option:disabled{cursor:default}
+.option .k{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:10px;font-weight:750;font-size:14px;background:rgba(124,156,255,.14);color:#c3d0ff;transition:.18s}
+.option .t{padding-top:3px;flex:1}
+.option .ic{flex:none;margin-left:auto;padding-top:3px;font-weight:800;opacity:0}
+.option.good{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.6)}
+.option.good .k{background:var(--good);color:#06281c}
+.option.good .ic{opacity:1;color:var(--good)}
+.option.bad{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.6);animation:shake .35s}
+.option.bad .k{background:var(--bad);color:#2e0710}
+.option.bad .ic{opacity:1;color:var(--bad)}
+.option.dim{opacity:.45}
+@keyframes shake{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+.feedback{margin-top:18px;padding:14px 16px;border-radius:14px;font-weight:600;display:none}
+.feedback.ok{display:block;background:rgba(52,211,153,.1);color:#a7f3d0;border:1px solid rgba(52,211,153,.3)}
+.feedback.no{display:block;background:rgba(251,113,133,.08);color:#fecdd3;border:1px solid rgba(251,113,133,.3)}
+.hint{margin-top:18px;text-align:center}
+kbd{font:600 11px ui-monospace,monospace;padding:2px 6px;border-radius:6px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--soft)}
+/* result */
+.result{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.ring{position:relative;width:150px;height:150px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:12}
+.ring .bg{stroke:rgba(255,255,255,.07)}
+.ring .fg{stroke:url(#grad);stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;font-weight:800;letter-spacing:-.03em}
+.review{margin-top:30px;border-top:1px solid var(--line);padding-top:22px}
+.review h3{font-size:17px;margin:0 0 14px}
+.item{padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);margin-bottom:10px}
+.item strong{display:block;font-weight:600;color:var(--text);margin-bottom:6px}
+.item .ans{font-size:14px;color:#a7f3d0}
+.item .n{color:var(--accent);margin-right:6px}
+footer{margin-top:22px;text-align:center}
+@media (max-width:560px){.features{grid-template-columns:1fr 1fr 1fr;gap:8px}.feat{padding:12px}.feat b{font-size:20px}.result{justify-content:center;text-align:center}.hint{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <span class="eyebrow"><i></i>Estudo · Simulado</span>
+  <h1>Modelagem de Negócios</h1>
+  <section class="panel" id="app"></section>
+  <footer class="muted">20 questões originais das imagens enviadas · Gabarito conforme as marcações do Socrative</footer>
+</main>
+<script>
+const raw=[
+['Qual é uma das principais vantagens da modelagem de negócios em projetos de TI?','Substituir todas as etapas de desenvolvimento de software.','Avaliar a viabilidade de uma ideia e reduzir incertezas antes de investir.','Eliminar completamente os custos de desenvolvimento.','Garantir o sucesso comercial de qualquer software.',1],
+['Quantos blocos compõem o Business Model Canvas?','Nove blocos.','Seis blocos.','Dez blocos.','Doze blocos.',0],
+['Qual alternativa apresenta uma estratégia de relacionamento com clientes em uma empresa de software?','Aumentar os custos operacionais.','Eliminar o atendimento após a venda.','Oferecer suporte por chatbot, central de ajuda e treinamento inicial.','Reduzir a disponibilidade do sistema.',2],
+['Qual é a relação correta entre Business Model Canvas, Lean Canvas e análise SWOT?','São ferramentas complementares para estruturar, testar e analisar modelos de negócio.','O Lean Canvas é utilizado exclusivamente para calcular despesas.','As três ferramentas possuem exatamente a mesma finalidade.','A análise SWOT substitui todos os blocos do Canvas.',0],
+['Na análise SWOT, quais elementos são considerados?','Tecnologias, linguagens, servidores e redes.','Clientes, receitas, custos e canais.','Produtos, preços, fornecedores e vendas.','Forças, fraquezas, oportunidades e ameaças.',3],
+['Qual alternativa representa uma fonte de receita comum em empresas que oferecem software como serviço (SaaS)?','Pagamento de salários.','Compra de servidores.','Contratação de desenvolvedores.','Cobrança de assinaturas mensais.',3],
+['Qual alternativa apresenta um erro comum na modelagem de negócios?','Avaliar custos de manutenção.','Atualizar o Canvas após validar hipóteses.','Identificar necessidades dos clientes.','Confundir usuário com cliente pagante e ignorar custos de aquisição.',3],
+['No Canvas, qual situação representa uma parceria principal?','Criar uma campanha de divulgação nas redes sociais.','Definir o preço da assinatura mensal.','Identificar o público-alvo.','Integrar um gateway de pagamento ao aplicativo.',3],
+['O que é modelagem de negócios?','Uma ferramenta utilizada apenas para controlar funcionários.','Um processo exclusivo de programação de sistemas.','Uma representação de como uma empresa cria, entrega e captura valor.','Uma técnica destinada exclusivamente à criação de sites.',2],
+['No Canvas, qual é a função do bloco Segmentos de Clientes?','Identificar quem utilizará ou comprará a solução.','Definir os fornecedores de infraestrutura.','Calcular os custos de hospedagem.','Escolher as linguagens de programação.',0],
+['Uma startup desenvolve um aplicativo de agendamento para salões de beleza e cobra mensalidade por estabelecimento. Essa mensalidade corresponde a:','Uma atividade principal.','Um recurso principal.','Um canal de distribuição.','Uma fonte de receita.',3],
+['Qual atividade pode ser considerada essencial para uma empresa que desenvolve aplicativos?','Ignorar solicitações dos usuários.','Eliminar o monitoramento da disponibilidade.','Evitar atualizações após o lançamento.','Desenvolver, testar, atualizar e manter os sistemas.',3],
+['No Business Model Canvas, o bloco Canais representa:','As atividades internas de manutenção de sistemas.','As despesas com funcionários e servidores.','Os meios utilizados para divulgar, vender e entregar produtos ou serviços.','Os conhecimentos técnicos dos desenvolvedores.',2],
+['Qual é uma prática recomendada para validar hipóteses antes de desenvolver completamente um aplicativo?','Considerar que a ideia inicial não precisa de ajustes.','Investir em todas as funcionalidades sem realizar testes.','Entrevistar clientes e testar um produto mínimo viável (MVP).','Evitar ouvir potenciais usuários.',2],
+['Quem é um dos principais criadores do Business Model Canvas?','Alan Turing.','Bill Gates.','Alexander Osterwalder.','Steve Jobs.',2],
+['Uma empresa desenvolve um aplicativo que envia lembretes automáticos para reduzir faltas em consultas. Esse benefício pertence a qual bloco?','Parcerias principais.','Estrutura de custos.','Proposta de valor.','Recursos principais.',2],
+['Qual alternativa apresenta exemplos de recursos principais de uma empresa de TI?','Mensalidades e comissões de vendas.','Clientes, concorrentes e oportunidades de mercado.','Campanhas promocionais e descontos.','Desenvolvedores, servidores, banco de dados e conhecimento técnico.',3],
+['Qual ferramenta organiza um modelo de negócio em nove blocos interdependentes?','Business Model Canvas.','Análise SWOT.','Diagrama de classes UML.','Mapa de empatia.',0],
+['Qual alternativa apresenta custos típicos de uma empresa de software?','Benefícios percebidos pelos usuários.','Assinaturas recebidas e comissões de vendas.','Equipe, hospedagem em nuvem, licenças e marketing.','Receitas recorrentes e pagamentos dos clientes.',2],
+['Qual é o principal foco do Lean Canvas?','Controlar servidores e bancos de dados.','Analisar problemas, soluções e hipóteses de negócio.','Desenvolver interfaces gráficas de aplicativos.','Administrar exclusivamente os recursos humanos.',1]];
+
+const questions=raw.map((r,i)=>({id:i+1,q:r[0],a:r.slice(1,5),c:r[5]}));
+const L='ABCD';
+let queue=[],pos=0,score=0,wrong=[],answered=false,shuffleOpts=false,cur=null,screen='home';
+const app=document.querySelector('#app');
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function render(html){app.innerHTML=`<div class="fade">${html}</div>`}
+
+function home(){
+  screen='home';
+  render(`<h2 style="margin-top:0">Pronto para treinar?</h2>
+  <p>Responda às questões e veja o gabarito logo após cada escolha. No final, revise só o que errou.</p>
+  <div class="features">
+    <div class="feat"><b>20</b><span>questões</span></div>
+    <div class="feat"><b>4</b><span>alternativas</span></div>
+    <div class="feat"><b>3</b><span>ferramentas</span></div>
+  </div>
+  <label class="toggle"><input type="checkbox" id="sh" ${shuffleOpts?'checked':''} onchange="shuffleOpts=this.checked">Embaralhar também as alternativas</label>
+  <div class="actions" style="margin-top:0">
+    <button class="btn primary" onclick="start(questions,true)">Iniciar simulado aleatório →</button>
+    <button class="btn" onclick="start(questions,false)">Ordem original</button>
+  </div>`);
+}
+
+function start(list,random){queue=random?shuffle(list):[...list];pos=0;score=0;wrong=[];show()}
+
+function show(){
+  screen='quiz';answered=false;
+  const q=queue[pos];
+  let opts=q.a.map((t,i)=>({t,ok:i===q.c}));
+  if(shuffleOpts)opts=shuffle(opts);
+  cur={q,opts};
+  render(`<div class="top">
+      <span><b style="color:var(--text)">${pos+1}</b> / ${queue.length}</span>
+      <span style="display:flex;gap:6px"><span class="pill g" id="pg">✓ ${score}</span><span class="pill b" id="pb">✕ ${wrong.length}</span></span>
+    </div>
+    <div class="bar"><div id="bar" style="width:${pos/queue.length*100}%"></div></div>
+    <div class="qnum">Questão original ${q.id}</div>
+    <h2>${q.q}</h2>
+    <div>${opts.map((o,i)=>`<button class="option" onclick="answer(${i})"><span class="k">${L[i]}</span><span class="t">${o.t}</span><span class="ic"></span></button>`).join('')}</div>
+    <div class="feedback" aria-live="polite" id="feedback"></div>
+    <div class="actions">
+      <button class="btn primary" id="next" hidden onclick="advance()">${pos+1===queue.length?'Ver resultado':'Próxima questão →'}</button>
+      <button class="btn" onclick="home()">Voltar ao início</button>
+    </div>
+    <div class="hint muted">Atalhos: <kbd>A</kbd>–<kbd>D</kbd> ou <kbd>1</kbd>–<kbd>4</kbd> para responder · <kbd>Enter</kbd> para avançar</div>`);
+}
+
+function answer(i){
+  if(answered||screen!=='quiz')return;answered=true;
+  const {q,opts}=cur,ok=opts[i].ok,ci=opts.findIndex(o=>o.ok);
+  if(ok)score++;else wrong.push(q);
+  document.querySelectorAll('.option').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===ci){b.classList.add('good');b.querySelector('.ic').textContent='✓'}
+    else if(j===i){b.classList.add('bad');b.querySelector('.ic').textContent='✕'}
+    else b.classList.add('dim');
+  });
+  const fb=document.querySelector('#feedback');
+  fb.className='feedback '+(ok?'ok':'no');
+  fb.textContent=ok?'✓ Resposta correta!':`✕ Resposta incorreta. Correta: ${L[ci]} — ${opts[ci].t}`;
+  document.querySelector('#pg').textContent='✓ '+score;
+  document.querySelector('#pb').textContent='✕ '+wrong.length;
+  document.querySelector('#bar').style.width=(pos+1)/queue.length*100+'%';
+  const n=document.querySelector('#next');n.hidden=false;n.focus();
+}
+
+function advance(){if(!answered)return;if(++pos<queue.length)show();else result()}
+
+function result(){
+  screen='result';
+  const pct=Math.round(score/queue.length*100),C=2*Math.PI*62;
+  const msg=pct===100?'Gabaritou! 🎉':pct>=80?'Mandou muito bem!':pct>=60?'Bom resultado — dá pra chegar lá.':'Bora revisar e tentar de novo.';
+  render(`<div class="result">
+      <div class="ring">
+        <svg width="150" height="150"><defs><linearGradient id="grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c9cff"/><stop offset="1" stop-color="#b18cff"/></linearGradient></defs>
+          <circle class="bg" cx="75" cy="75" r="62"/><circle class="fg" id="arc" cx="75" cy="75" r="62" stroke-dasharray="${C}" stroke-dashoffset="${C}"/></svg>
+        <div class="v">${pct}%</div>
+      </div>
+      <div>
+        <div class="qnum">Simulado concluído</div>
+        <h2 style="margin:6px 0 8px">${msg}</h2>
+        <p style="margin:0"><span class="pill g">✓ ${score} acertos</span> <span class="pill b">✕ ${wrong.length} erros</span></p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="start(questions,true)">Refazer simulado</button>
+      ${wrong.length?'<button class="btn" onclick="start(wrong,true)">Treinar apenas os erros</button>':''}
+      <button class="btn" onclick="home()">Início</button>
+    </div>
+    ${wrong.length?`<div class="review"><h3>Questões para revisar</h3>${wrong.map(q=>`<div class="item"><strong><span class="n">${q.id}.</span>${q.q}</strong><div class="ans">✓ ${L[q.c]} — ${q.a[q.c]}</div></div>`).join('')}</div>`:''}`);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{document.querySelector('#arc').style.strokeDashoffset=C*(1-score/queue.length)}));
+}
+
+document.addEventListener('keydown',e=>{
+  if(screen!=='quiz'||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toUpperCase();
+  let i='ABCD'.indexOf(k);if(i<0)i='1234'.indexOf(k);
+  if(i>=0&&k.length===1&&!answered){e.preventDefault();answer(i)}
+  else if(e.key==='Enter'&&answered&&document.activeElement?.id!=='next'){e.preventDefault();advance()}
+});
+
+home();
+</script>
+</body>
+</html>
